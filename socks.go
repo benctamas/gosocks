@@ -125,7 +125,7 @@ func readAll(conn net.Conn) (resp []byte, err error) {
 	return
 }
 
-func lookupIP4(host string) (ip net.IP, err error) {
+func LookupIP4(host string) (ip net.IP, err error) {
 	ips, err := net.LookupIP(host)
 	if err != nil {
 		return
