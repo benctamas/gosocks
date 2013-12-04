@@ -12,7 +12,7 @@ var proxy_addr = flag.String("proxy", "localhost:1080", "proxy_ip_or_domain:port
 var target_url = flag.String("url", "http://github.com/about/", "url")
 
 func main() {
-    flag.Parse()
+	flag.Parse()
 	dialSocks5Proxy := socks.DialSocks5Proxy(*proxy_addr)
 	tr := &http.Transport{Dial: dialSocks5Proxy}
 	httpClient := &http.Client{Transport: tr}
