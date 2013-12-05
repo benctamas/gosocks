@@ -85,14 +85,20 @@ func dialSocks5(proxy, targetAddr string) (conn net.Conn, err error) {
 	}
 	// detail request
 	host, port, err := splitHostPort(targetAddr)
+	if err != nil {
+		return
+	}
+	ip, err := LookupIP4(host)
+	if err != nil {
+		return
+	}
 	req = []byte{
 		5,              // version number
 		1,              // connect command
 		0,              // reserved, must be zero
-		3,              // 3: domain name
-		byte(len(host)),
+		1,              // 1: ipv4 address
+		ip[0], ip[1], ip[2], ip[3],
 	}
-	req = append(req, []byte(host)...)
 	req = append(req, []byte{
 		byte(port >> 8), // higher byte of destination port
 		byte(port),      // lower byte of destination port (big endian)
@@ -135,11 +141,12 @@ func LookupIP4(host string) (ip net.IP, err error) {
 		return
 	}
 	for _, ip = range ips {
-	    if ip.To4() != nil {
-		return
-	    }
+		ip = ip.To4()
+		if ip != nil {
+			return
+		}
 	}
-	err = errors.New("IPv6 is not supported")
+	err = errors.New(fmt.Sprintf("Cannot resolve IPv4 address of the host: %s.", host))
 	return
 }
 
